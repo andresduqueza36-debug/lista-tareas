@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#5E4AE3">
+<title>Mis tareas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F3F1FF;--card:#fff;--ink:#231942;--mute:#7a7497;--line:#e4e0f7;--acc:#5E4AE3;--onacc:#fff;--ok:#C5F36B;--okink:#2b3a00;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15112b;--card:#1f1a3d;--ink:#f0edff;--mute:#9a94c4;--line:#322b5c;--acc:#9d8cff;--onacc:#15112b;--okink:#1d2900}}
+:root[data-theme="dark"]{--bg:#15112b;--card:#1f1a3d;--ink:#f0edff;--mute:#9a94c4;--line:#322b5c;--acc:#9d8cff;--onacc:#15112b;--okink:#1d2900}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh;display:flex;justify-content:center;padding:28px 16px 64px}
+main{width:100%;max-width:540px}
+button{font:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 14px;margin-bottom:6px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:99px;border:2px solid var(--line);background:transparent;color:var(--ink);font-size:15px;font-weight:600}
+.chip b{font-weight:600;font-size:12px;min-width:20px;padding:1px 6px;border-radius:99px;background:var(--line);color:var(--mute)}
+.chip[aria-pressed=true]{background:var(--acc);border-color:var(--acc);color:var(--onacc)}
+.chip[aria-pressed=true] b{background:rgba(255,255,255,.25);color:inherit}
+.chip.new{border-style:dashed;color:var(--mute);font-weight:400}
+.mini{flex:none;font:inherit;font-size:15px;padding:8px 14px;border-radius:99px;border:2px solid var(--acc);background:var(--card);color:var(--ink);width:150px}
+.date{color:var(--mute);font-size:15px;text-transform:capitalize;margin:0 0 4px}
+h1{font-size:40px;line-height:1.05;font-weight:800;letter-spacing:-.03em;margin:0 0 6px;overflow-wrap:anywhere}
+h1 input{font:inherit;width:100%;border:0;border-bottom:3px solid var(--acc);background:transparent;color:var(--ink);padding:0}
+.msg{margin:0 0 16px;color:var(--mute);font-size:16px;min-height:24px}
+.bar{height:10px;border-radius:99px;background:var(--line);overflow:hidden;margin-bottom:20px}
+.bar i{display:block;height:100%;width:0;background:var(--acc);border-radius:99px;transition:width .5s cubic-bezier(.3,1.4,.5,1)}
+.bar.full i{background:var(--ok)}
+form.add{display:flex;gap:8px;margin-bottom:16px}
+input.txtin{flex:1;min-width:0;font:inherit;font-size:17px;padding:14px 16px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink)}
+input.txtin::placeholder{color:var(--mute)}
+input.txtin:focus{outline:none;border-color:var(--acc)}
+.btn{font-weight:600;font-size:17px;padding:0 20px;border-radius:14px;border:0;background:var(--acc);color:var(--onacc)}
+.btn:active{transform:scale(.96)}
+.tabs{display:flex;gap:6px;margin-bottom:12px}
+.tabs button{font-size:14px;padding:6px 14px;border-radius:99px;border:2px solid var(--line);background:transparent;color:var(--mute)}
+.tabs button[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+ul{list-style:none;margin:0;padding:0}
+#list{display:flex;flex-direction:column;gap:8px}
+.task{background:var(--card);border-radius:14px;overflow:hidden}
+.task.in{animation:in .25s ease-out}
+@keyframes in{from{opacity:0;transform:translateY(-6px)}}
+.row{display:flex;align-items:center;gap:10px;padding:10px 6px 10px 14px}
+.chk{flex:none;width:28px;height:28px;border-radius:50%;border:2px solid var(--acc);background:transparent;display:grid;place-items:center;color:var(--okink);padding:0}
+.chk svg{width:16px;height:16px;opacity:0;transform:scale(.3);transition:.2s}
+.done>.row .chk,.sub li.done .chk{background:var(--ok);border-color:var(--ok);animation:pop .3s}
+.done>.row .chk svg,.sub li.done .chk svg{opacity:1;transform:none}
+@keyframes pop{50%{transform:scale(1.25)}}
+.txt{flex:1;font-size:17px;overflow-wrap:anywhere;line-height:1.3}
+.done>.row .txt,.sub li.done .txt{color:var(--mute);text-decoration:line-through;text-decoration-thickness:2px}
+.badge{flex:none;font-size:12px;font-weight:600;color:var(--mute);background:var(--line);padding:3px 8px;border-radius:99px}
+.ic{flex:none;width:36px;height:36px;border:0;background:transparent;color:var(--mute);border-radius:10px;display:grid;place-items:center;font-size:22px;line-height:1}
+.ic:hover{color:var(--ink);background:var(--line)}
+.ic svg{width:18px;height:18px;transition:transform .2s}
+.ic[aria-expanded=true] svg{transform:rotate(180deg)}
+.sub{padding:0 8px 12px 52px;border-top:1px dashed var(--line);margin-top:2px;padding-top:8px}
+.sub li{display:flex;align-items:center;gap:10px;padding:4px 0}
+.sub .chk{width:22px;height:22px;border-width:2px;border-radius:7px}
+.sub .chk svg{width:13px;height:13px}
+.sub .txt{font-size:15px}
+.sub .ic{width:30px;height:30px;font-size:19px}
+.sub form{display:flex;gap:6px;margin-top:6px}
+.sub input{flex:1;min-width:0;font:inherit;font-size:15px;padding:8px 12px;border-radius:10px;border:2px dashed var(--line);background:transparent;color:var(--ink)}
+.sub input:focus{outline:none;border-color:var(--acc);border-style:solid}
+.empty{text-align:center;color:var(--mute);padding:34px 12px;font-size:16px}
+.foot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-top:16px;color:var(--mute);font-size:14px}
+.foot div{display:flex;gap:10px}
+.foot button{font-size:14px;background:none;border:0;color:var(--acc);text-decoration:underline;padding:4px}
+.foot button.danger{color:#d4324c}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .foot button.danger{color:#ff7a8e}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+  <div class="chips" id="chips"></div>
+  <p class="date" id="date"></p>
+  <h1 id="title"></h1>
+  <p class="msg" id="msg"></p>
+  <div class="bar" id="bar"><i></i></div>
+  <form class="add" id="f">
+    <input class="txtin" type="text" id="t" placeholder="¿Qué quieres hacer?" maxlength="120" autocomplete="off" aria-label="Nueva tarea">
+    <button class="btn" type="submit">Añadir</button>
+  </form>
+  <div class="tabs" id="tabs">
+    <button data-f="all" aria-pressed="true">Todas</button>
+    <button data-f="open" aria-pressed="false">Pendientes</button>
+    <button data-f="done" aria-pressed="false">Hechas</button>
+  </div>
+  <ul id="list"></ul>
+  <div class="foot"><span id="count"></span><div id="acts"></div></div>
+</main>
+<script>
+const KEY="tareas-v2";
+let S=null,filter="all",open=new Set(),adding=false,renaming=false,confirmDel=false,newId=null,focusSel=null;
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!S||!S.lists||!S.lists.length){
+  let old=[];try{old=JSON.parse(localStorage.getItem("tareas-simples"))||[]}catch(e){}
+  S={lists:[{id:uid(),name:"Mis tareas",tasks:old.map(t=>({id:String(t.id),text:t.text,done:!!t.done,items:[]}))}]};
+  S.active=S.lists[0].id;
+}
+const L=()=>S.lists.find(l=>l.id===S.active)||S.lists[0];
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const $=id=>document.getElementById(id);
+function el(tag,props={},...kids){const e=document.createElement(tag);Object.assign(e,props);kids.forEach(k=>e.append(k));return e}
+const CHECK='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg>';
+const CHEV='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l5 5 5-5"/></svg>';
+$("date").textContent=new Date().toLocaleDateString("es",{weekday:"long",day:"numeric",month:"long"});
+function msgFor(d,n){
+  if(!n)return "Empieza con algo pequeño. Lo escribes y listo.";
+  if(d===n)return "¡Todo hecho! Te mereces un descanso.";
+  if(d===0)return n===1?"Una sola tarea. Tú puedes.":"Elige una y empieza por ahí.";
+  if(d/n>=.5)return "Ya pasaste la mitad. Sigue así.";
+  return "Buen comienzo, una menos en tu lista.";
+}
+function renderChips(){
+  const c=$("chips");c.innerHTML="";
+  S.lists.forEach(l=>{
+    const b=el("button",{className:"chip"},l.name,el("b",{textContent:l.tasks.filter(t=>!t.done).length}));
+    b.setAttribute("aria-pressed",l.id===S.active);
+    b.onclick=()=>{S.active=l.id;renaming=confirmDel=false;save();render()};
+    c.append(b);
+  });
+  if(adding){
+    const i=el("input",{className:"mini",placeholder:"Nombre…",maxLength:24,id:"newlist"});
+    i.setAttribute("aria-label","Nombre de la nueva lista");
+    i.onkeydown=e=>{
+      if(e.key==="Escape"){adding=false;render()}
+      if(e.key==="Enter"){const v=i.value.trim();adding=false;
+        if(v){const l={id:uid(),name:v,tasks:[]};S.lists.push(l);S.active=l.id;save()}
+        render();}
+    };
+    i.onblur=()=>{if(adding){adding=false;render()}};
+    c.append(i);focusSel="#newlist";
+  }else{
+    const b=el("button",{className:"chip new",textContent:"+ Nueva lista"});
+    b.onclick=()=>{adding=true;render()};c.append(b);
+  }
+}
+function renderTitle(){
+  const h=$("title");h.innerHTML="";
+  if(renaming){
+    const i=el("input",{value:L().name,maxLength:24,id:"ren"});i.setAttribute("aria-label","Nuevo nombre de la lista");
+    const done=()=>{const v=i.value.trim();if(v)L().name=v;renaming=false;save();render()};
+    i.onkeydown=e=>{if(e.key==="Enter")done();if(e.key==="Escape"){renaming=false;render()}};
+    i.onblur=()=>{if(renaming)done()};
+    h.append(i);focusSel="#ren";
+  }else h.textContent=L().name;
+}
+function taskEl(t){
+  const isOpen=open.has(t.id),n=t.items.length,d=t.items.filter(i=>i.done).length;
+  const li=el("li",{className:"task"+(t.done?" done":"")+(t.id===newId?" in":"")});
+  const b=el("button",{className:"chk",innerHTML:CHECK});
+  b.setAttribute("aria-label",(t.done?"Desmarcar: ":"Marcar como hecha: ")+t.text);
+  b.onclick=()=>{t.done=!t.done;save();render()};
+  const row=el("div",{className:"row"},b,el("span",{className:"txt",textContent:t.text}));
+  if(n)row.append(el("span",{className:"badge",textContent:d+"/"+n}));
+  const ex=el("button",{className:"ic",innerHTML:CHEV});
+  ex.setAttribute("aria-expanded",isOpen);ex.setAttribute("aria-label","Checklist de: "+t.text);
+  ex.onclick=()=>{isOpen?open.delete(t.id):open.add(t.id);if(!isOpen)focusSel='[data-add="'+t.id+'"]';render()};
+  const x=el("button",{className:"ic",innerHTML:"&times;"});x.setAttribute("aria-label","Eliminar: "+t.text);
+  x.onclick=()=>{L().tasks=L().tasks.filter(k=>k.id!==t.id);save();render()};
+  row.append(ex,x);li.append(row);
+  if(isOpen){
+    const sub=el("div",{className:"sub"});
+    const ul=el("ul");
+    t.items.forEach(it=>{
+      const c=el("button",{className:"chk",innerHTML:CHECK});c.setAttribute("aria-label",(it.done?"Desmarcar: ":"Marcar: ")+it.text);
+      c.onclick=()=>{it.done=!it.done;save();render()};
+      const r=el("button",{className:"ic",innerHTML:"&times;"});r.setAttribute("aria-label","Quitar: "+it.text);
+      r.onclick=()=>{t.items=t.items.filter(k=>k.id!==it.id);save();render()};
+      ul.append(el("li",{className:it.done?"done":""},c,el("span",{className:"txt",textContent:it.text}),r));
+    });
+    const f=el("form"),i=el("input",{placeholder:"Añadir un paso…",maxLength:100,autocomplete:"off"});
+    i.setAttribute("data-add",t.id);i.setAttribute("aria-label","Nuevo paso");
+    f.onsubmit=e=>{e.preventDefault();const v=i.value.trim();if(!v)return;
+      t.items.push({id:uid(),text:v,done:false});focusSel='[data-add="'+t.id+'"]';save();render()};
+    f.append(i);sub.append(ul,f);li.append(sub);
+  }
+  return li;
+}
+function render(){
+  focusSel=focusSel&&focusSel;
+  const l=L(),n=l.tasks.length,d=l.tasks.filter(t=>t.done).length;
+  renderChips();renderTitle();
+  $("msg").textContent=msgFor(d,n);
+  $("bar").firstElementChild.style.width=(n?d/n*100:0)+"%";
+  $("bar").classList.toggle("full",n>0&&d===n);
+  $("count").textContent=n?d+" de "+n+" hechas":"";
+  const acts=$("acts");acts.innerHTML="";
+  if(d){const b=el("button",{textContent:"Borrar hechas"});b.onclick=()=>{l.tasks=l.tasks.filter(t=>!t.done);save();render()};acts.append(b)}
+  const rn=el("button",{textContent:"Renombrar"});rn.onclick=()=>{renaming=true;render()};acts.append(rn);
+  if(S.lists.length>1){
+    const dl=el("button",{className:"danger",textContent:confirmDel?"¿Seguro? Borrar lista":"Eliminar lista"});
+    dl.onclick=()=>{
+      if(!confirmDel){confirmDel=true;render();return}
+      S.lists=S.lists.filter(k=>k.id!==l.id);S.active=S.lists[0].id;confirmDel=false;save();render();
+    };acts.append(dl);
+  }
+  const ul=$("list");ul.innerHTML="";
+  const shown=l.tasks.filter(t=>filter==="all"||(filter==="done")===t.done);
+  if(!shown.length){
+    ul.append(el("li",{className:"empty",textContent:!n?"Esta lista está vacía. Escribe la primera tarea arriba.":filter==="done"?"Todavía no has terminado ninguna.":"No te queda nada pendiente."}));
+  }else shown.forEach(t=>ul.append(taskEl(t)));
+  newId=null;
+  if(focusSel){const e=document.querySelector(focusSel);if(e)e.focus();focusSel=null}
+}
+$("f").onsubmit=e=>{
+  e.preventDefault();
+  const v=$("t").value.trim();if(!v)return;
+  const t={id:uid(),text:v,done:false,items:[]};
+  L().tasks.unshift(t);newId=t.id;$("t").value="";save();render();
+};
+$("tabs").onclick=e=>{
+  const b=e.target.closest("button");if(!b)return;
+  filter=b.dataset.f;
+  [...$("tabs").children].forEach(k=>k.setAttribute("aria-pressed",k===b));
+  render();
+};
+render();
+</script>
+</body>
+</html>
